@@ -43,7 +43,7 @@ import { AdminService } from '../../services/admin.service';
         </nav>
 
         <div class="sidebar-footer">
-          <a href="/" class="nav-link">
+          <a routerLink="/" class="nav-link">
             <span class="material-icons">language</span>
             @if (!collapsed()) { <span>Ver Sitio</span> }
           </a>

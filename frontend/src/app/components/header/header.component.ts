@@ -1,8 +1,11 @@
 import { Component, HostListener, signal, inject } from '@angular/core';
-import { TranslationService, Lang } from '../../services/translation.service';
+import { RouterLink } from '@angular/router';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
+  imports: [RouterLink],
   template: `
     <header [class.scrolled]="isScrolled()">
       <div class="header-container">
@@ -18,7 +21,7 @@ import { TranslationService, Lang } from '../../services/translation.service';
           <a href="#team" (click)="closeMenu()">{{ i18n.t('nav.team') }}</a>
           <a href="#booking" (click)="closeMenu()">{{ i18n.t('nav.booking') }}</a>
           <a href="#contact" (click)="closeMenu()">{{ i18n.t('nav.contact') }}</a>
-          <a href="/barber/login" (click)="closeMenu()">{{ i18n.t('nav.barber') }}</a>
+          <a routerLink="/barber/login" (click)="closeMenu()">{{ i18n.t('nav.barber') }}</a>
         </nav>
 
         <div class="header-right">

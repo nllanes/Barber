@@ -1,11 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 
 @Component({
   selector: 'app-admin-login',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   template: `
     <div class="login-page">
       <div class="login-card">
@@ -30,7 +30,7 @@ import { AdminService } from '../../services/admin.service';
             {{ loading() ? 'Verificando...' : 'Ingresar' }}
           </button>
         </form>
-        <a href="/" class="back-link">← Volver al sitio</a>
+        <a routerLink="/" class="back-link">← Volver al sitio</a>
       </div>
     </div>
   `,
