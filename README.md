@@ -80,7 +80,8 @@ En el repo ya hay:
    |----------|-------------------------------------|
    | `ASPNETCORE_URLS` | `http://0.0.0.0:$PORT` |
    | `BarberTokenSecret` | Una cadena larga y aleatoria |
-   | `Cors__AllowedOrigins` | `https://nllanes.github.io` |
+   | `Cors__AllowedOrigins` | `https://nllanes.github.io` (**dos** `_` entre `Cors` y `Allowed`) |
+   | `FrontendOrigin` | *(opcional)* mismo valor si prefieres un nombre corto; el código lo usa igual que CORS |
    | `PublicAppUrl` | `https://nllanes.github.io/Barber/` |
    | `AdminPassword` | Tu clave admin (no uses la de ejemplo en producción) |
    | *(opcional)* `Smtp__Host`, … / `Twilio__…` | Si quieres correo/SMS en producción |

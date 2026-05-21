@@ -30,9 +30,12 @@ import { AdminService } from '../../services/admin.service';
           @if (networkError()) {
             <div class="error-msg" style="color: var(--gold); opacity: .9;">
               <span class="material-icons">cloud_off</span>
-              No se pudo llegar al servidor (CORS o URL del API incorrecta).
-              En Railway añade <code>Cors__AllowedOrigins</code>=<code>https://nllanes.github.io</code>
-              y revisa que <code>BACKEND_ORIGIN</code> en GitHub Actions coincida con tu Railway.
+              El navegador no pudo llamar al API (no es sólo «mala contraseña»). Haz esto:<br/>
+              <strong>Railway</strong> → Variables → súbelo de nuevo así:
+              <code>Cors__AllowedOrigins</code> (<strong>dos</strong> barras <code>_</code> después de Cors)
+              = <code>https://nllanes.github.io</code> (sin barra al final)<br/>
+              O más simple, variable <code>FrontendOrigin</code> = ese mismo valor.
+              Luego <strong>Redeploy</strong>. En GitHub, el secreto <code>BACKEND_ORIGIN</code> debe ser tu URL Railway <strong>exacta</strong> (ej. …<code>.up.railway.app</code>), sin /api ni / al final.
             </div>
           }
           <button type="submit" class="btn-login" [disabled]="loading()">

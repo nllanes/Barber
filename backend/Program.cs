@@ -27,6 +27,8 @@ var corsLocalDev = new[]
     "http://127.0.0.1:4300", "https://127.0.0.1:4300",
 };
 var corsExtraRaw = builder.Configuration["Cors:AllowedOrigins"];
+if (string.IsNullOrWhiteSpace(corsExtraRaw))
+    corsExtraRaw = builder.Configuration["FrontendOrigin"];
 var corsExtra = string.IsNullOrWhiteSpace(corsExtraRaw)
     ? Array.Empty<string>()
     : corsExtraRaw.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
