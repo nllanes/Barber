@@ -1,0 +1,10 @@
+.git
+.github
+**/bin
+**/obj
+**/node_modules
+frontend/dist
+frontend/.angular
+**/smtp.local.json
+*.db
+backend/uploads

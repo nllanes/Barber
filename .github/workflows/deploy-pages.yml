@@ -1,0 +1,67 @@
+# Despliegue gratis del frontend a GitHub Pages (sitio estático Angular).
+#
+# Pasos ONE-TIME en el repo GitHub:
+# 1. Settings → Pages → Source: GitHub Actions
+# 2. Settings → Secrets and variables → Actions → New repo secret BACKEND_ORIGIN
+#    Valor = URL del API sin barra final (ej. https://barber-production.up.railway.app)
+#    (créalo después del primer deploy del backend).
+#
+name: Deploy frontend to GitHub Pages
+
+# Ejecuta manualmente después de crear el secreto BACKEND_ORIGIN en GitHub
+# (Actions → Deploy frontend to GitHub Pages → Run workflow).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set backend URL for production build
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_ORIGIN }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "::error title=Secrets::Añade el secret BACKEND_ORIGIN (URL del API sin barra final). Ver README » Deploy gratis."
+            exit 1
+          fi
+          sed -i "s|const BACKEND_ORIGIN = '.*';|const BACKEND_ORIGIN = '${BACKEND_URL}';|" frontend/src/environments/environment.prod.ts
+          grep "BACKEND_ORIGIN" frontend/src/environments/environment.prod.ts
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: npm ci && ng build (base-href = /REPO/)
+        working-directory: frontend
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          npm ci
+          npx ng build --configuration production --base-href "/${REPO_NAME}/"
+
+      - name: SPA en GitHub Pages (refrescar rutas tipo /Repo/admin)
+        run: cp frontend/dist/frontend/browser/index.html frontend/dist/frontend/browser/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist/frontend/browser
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

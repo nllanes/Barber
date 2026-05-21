@@ -63,49 +63,59 @@ npm start
 
 El frontend estará en `http://localhost:4200` con proxy automático al backend.
 
-### Desplegar gratis para mostrar el sitio (demo)
+### Desplegar gratis (GitHub Pages + Railway)
 
-Necesitas **dos cosas**: la API (.NET) en la nube y el **sitio estático** (Angular). Son dominios distintos; por eso debes configurar **`frontend/src/environments/environment.prod.ts`** con la URL del backend y **CORS** en el servidor.
+En el repo ya hay:
 
-#### 1. Backend gratuito (Railway u otro)
+- **`Dockerfile`** en la raíz → backend (.NET 9) en **[Railway](https://railway.app)** u otro Docker.
+- **`.github/workflows/deploy-pages.yml`** → compila Angular y publica en **[GitHub Pages](https://pages.github.com)**.
 
-1. Sube el proyecto a **GitHub**.
-2. En **[Railway](https://railway.app)** crea un proyecto desde el repo y define la carpeta raíz **`backend`** (o el comando `dotnet publish` / Dockerfile si lo añades).
-3. Variables de entorno típicas:
-   - `ASPNETCORE_URLS` = `http://0.0.0.0:$PORT`
-   - **`Cors__AllowedOrigins`** = Origen(es) del frontend separados por coma **sin espacios extra**. Ejemplos:
-     - GitHub Pages (usuario): `https://TU-USUARIO.github.io`
-     - Vercel: `https://tu-app.vercel.app`
-   - **`PublicAppUrl`** = URL pública **del sitio web** (donde está Angular), para enlaces en correos; ej. `https://TU-USUARIO.github.io/NOMBRE-REPO/`
-   - **`BarberTokenSecret`** = cadena larga y aleatoria (no uses la de ejemplo).
-   - Opcional: correo **`Smtp__*`** / **`Twilio__*`** como en local.
+#### A) Backend en Railway
 
-4. Copia la URL pública del servicio (ej. `https://xxxx.up.railway.app`). **SQLite** en disco gratuito suele ser **efímero**: al redesplegar puede crearse una BD nueva (vale para demo).
+1. Entra en [Railway](https://railway.app) → **New project** → **Deploy from GitHub repo** ([nllanes/Barber](https://github.com/nllanes/Barber)).
+2. Crea **un servicio** con el **`Dockerfile`** de la raíz del repo.
+3. Variables de entorno del servicio:
 
-#### 2. Frontend gratuito
+   | Variable | Valor ejemplo (ajusta usuario/repo) |
+   |----------|-------------------------------------|
+   | `ASPNETCORE_URLS` | `http://0.0.0.0:$PORT` |
+   | `BarberTokenSecret` | Una cadena larga y aleatoria |
+   | `Cors__AllowedOrigins` | `https://nllanes.github.io` |
+   | `PublicAppUrl` | `https://nllanes.github.io/Barber/` |
+   | `AdminPassword` | Tu clave admin (no uses la de ejemplo en producción) |
+   | *(opcional)* `Smtp__Host`, … / `Twilio__…` | Si quieres correo/SMS en producción |
 
-1. Edita **`frontend/src/environments/environment.prod.ts`**: pon **`BACKEND_ORIGIN`** igual a la URL del API **sin barra final** (ej. `https://xxxx.up.railway.app`). Guarda y haz commit.
+4. Copia la URL pública del servicio, ej. **`https://barber-xxxx.up.railway.app`** (sin `/api`, sin `/` final).
 
-2. Genera el sitio estático:
+> **SQLite gratis:** `barberia.db` puede **perderse al redeploy** (normal para una demo).
+
+#### B) Frontend en GitHub Pages (automático)
+
+1. En GitHub → **Settings** → **Pages** → **Source: GitHub Actions** (solo la primera vez).
+2. **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
+   - Nombre: **`BACKEND_ORIGIN`**
+   - Valor: la URL del punto A4 (ej. `https://barber-xxxx.up.railway.app`).
+3. **Actions** → **Deploy frontend to GitHub Pages** → **Run workflow** .
+
+Tu sitio quedará en **`https://nllanes.github.io/Barber/`**. Actions usa el nombre del repo para **`--base-href`**.
+
+#### Build manual local (sin Actions)
 
 ```bash
 cd frontend
 npm ci
-npx ng build --configuration production --base-href /NOMBRE-DEL-REPO/
+npx ng build --configuration production --base-href /Barber/
 ```
 
-Si usas **dominio propio en la raíz** (`https://midominio.com`), usa `--base-href /`.
+Copia `dist/frontend/browser` donde publiques Pages (y **`index.html` como `404.html`** en esa carpeta para rutas tipo `/admin`).
 
-3. Sube la carpeta **`frontend/dist/frontend/browser`** a **GitHub Pages**, **Cloudflare Pages**, **Vercel** o **Netlify** (como proyecto estático). En Vercel/Netlify suele bastar con indicar directorio de salida `dist/frontend/browser` y comando build anterior.
-
-#### Opciones rápidas
+#### Opciones rápidas alternativas
 
 | Frontend | Backend |
 |----------|---------|
-| GitHub Pages / Cloudflare Pages | Railway / Render |
-| Vercel / Netlify | Railway / Fly.io |
+| Cloudflare Pages / Vercel / Netlify | Railway / Render / Fly.io |
 
-La tabla anterior del README (`Opciones de Despliegue Económico`) amplía variantes (Azure, VPS).
+Más opciones más abajo en **Opciones de Despliegue Económico**.
 
 ## Endpoints de la API
 
