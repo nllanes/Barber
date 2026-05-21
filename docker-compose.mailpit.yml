@@ -1,0 +1,17 @@
+# Mailpit: servidor SMTP de captura para desarrollo.
+#
+# Docker (requiere Docker Desktop ABIERTO y motor en ejecución):
+#   docker compose -f docker-compose.mailpit.yml up -d
+# Si falla con npipe://...dockerDesktopLinuxEngine → arranca Docker Desktop y espera a "Running".
+#
+# Sin Docker en Windows:
+#   pwsh -File .\scripts\start-mailpit.ps1
+#
+# Interfaz web: http://localhost:8025   SMTP: 127.0.0.1:1025 (appsettings.Development.json)
+
+services:
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"

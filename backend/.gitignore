@@ -1,0 +1,11 @@
+# Credenciales SMTP locales (no subir al repositorio)
+smtp.local.json
+
+# .NET compilado / local
+**/bin/
+**/obj/
+*.user
+
+# SQLite y archivos subidos (no datos locales al repo)
+*.db
+uploads/

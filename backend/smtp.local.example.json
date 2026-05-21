@@ -1,0 +1,15 @@
+{
+  "Smtp": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "UseSsl": true,
+    "User": "tu-correo@gmail.com",
+    "Password": "contraseña-de-aplicacion-sin-espacios",
+    "FromEmail": "tu-correo@gmail.com"
+  },
+  "Twilio": {
+    "AccountSid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "AuthToken": "tu-auth-token-de-twilio",
+    "FromNumber": "+15551234567"
+  }
+}
