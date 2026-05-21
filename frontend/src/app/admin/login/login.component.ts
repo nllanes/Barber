@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 
@@ -24,6 +25,14 @@ import { AdminService } from '../../services/admin.service';
             <div class="error-msg">
               <span class="material-icons">error</span>
               Contraseña incorrecta
+            </div>
+          }
+          @if (networkError()) {
+            <div class="error-msg" style="color: var(--gold); opacity: .9;">
+              <span class="material-icons">cloud_off</span>
+              No se pudo llegar al servidor (CORS o URL del API incorrecta).
+              En Railway añade <code>Cors__AllowedOrigins</code>=<code>https://nllanes.github.io</code>
+              y revisa que <code>BACKEND_ORIGIN</code> en GitHub Actions coincida con tu Railway.
             </div>
           }
           <button type="submit" class="btn-login" [disabled]="loading()">
@@ -141,19 +150,27 @@ export class AdminLoginComponent {
 
   password = '';
   loading = signal(false);
+  /** Solo credenciales inválidas (401/403). */
   error = signal(false);
+  /** Red, CORS, URL mal, servidor caído, etc. */
+  networkError = signal(false);
 
   onLogin() {
     this.error.set(false);
+    this.networkError.set(false);
     this.loading.set(true);
     this.admin.login(this.password).subscribe({
       next: () => {
         this.loading.set(false);
         this.router.navigate(['/admin']);
       },
-      error: () => {
+      error: (err: unknown) => {
         this.loading.set(false);
-        this.error.set(true);
+        const status = err instanceof HttpErrorResponse ? err.status : 0;
+        if (status === 401 || status === 403)
+          this.error.set(true);
+        else
+          this.networkError.set(true);
       }
     });
   }
