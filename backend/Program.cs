@@ -70,7 +70,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 
-var adminPassword = app.Configuration.GetValue<string>("AdminPassword") ?? "87061416902";
+var adminPassword = (app.Configuration.GetValue<string>("AdminPassword") ?? "87061416902").Trim();
 
 // ═══════════════════════════════════════════
 //  PUBLIC ENDPOINTS
@@ -210,7 +210,8 @@ app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp =
 
 app.MapPost("/api/admin/login", (LoginDto dto) =>
 {
-    if (dto.Password == adminPassword)
+    var pw = (dto.Password ?? string.Empty).Trim();
+    if (pw == adminPassword)
         return Results.Ok(new { token = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"admin:{DateTime.UtcNow:yyyyMMddHH}")) });
     return Results.Unauthorized();
 });
