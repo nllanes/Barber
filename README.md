@@ -200,4 +200,3 @@ Se usa **SQLite** integrado — sin costo adicional de base de datos. El archivo
 - Sistema de reserva de citas
 - Formulario de contacto
 - Navegación fluida con scroll suave
-- Fallback a datos locales si el backend no está disponible
