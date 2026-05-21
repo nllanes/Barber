@@ -28,14 +28,13 @@ import { AdminService } from '../../services/admin.service';
             </div>
           }
           @if (networkError()) {
-            <div class="error-msg" style="color: var(--gold); opacity: .9;">
+            <div class="network-hint">
               <span class="material-icons">cloud_off</span>
-              El navegador no pudo llamar al API (no es sólo «mala contraseña»). Haz esto:<br/>
-              <strong>Railway</strong> → Variables → súbelo de nuevo así:
-              <code>Cors__AllowedOrigins</code> (<strong>dos</strong> barras <code>_</code> después de Cors)
-              = <code>https://nllanes.github.io</code> (sin barra al final)<br/>
-              O más simple, variable <code>FrontendOrigin</code> = ese mismo valor.
-              Luego <strong>Redeploy</strong>. En GitHub, el secreto <code>BACKEND_ORIGIN</code> debe ser tu URL Railway <strong>exacta</strong> (ej. …<code>.up.railway.app</code>), sin /api ni / al final.
+              <div class="hint-body">
+                <p><strong>El servidor no contestó bien al navegador</strong> (CORS o URL mal). Suele pasar después de GitHub Pages. Copia una de estas parejas en Railway → Variables:</p>
+                <pre class="hint-pre">{{ railwayVarsCopy }}</pre>
+                <p class="hint-foot">Entre «Cors» y «Allowed» deben ir <strong>dos</strong> caracteres _. Luego espera redeploy · En GitHub, secreto BACKEND_ORIGIN = tu URL Railway sin /api</p>
+              </div>
             </div>
           }
           <button type="submit" class="btn-login" [disabled]="loading()">
@@ -145,11 +144,51 @@ import { AdminService } from '../../services/admin.service';
     }
 
     .back-link:hover { color: var(--gold); }
+
+    .network-hint {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(200,169,126,0.35);
+      border-radius: 8px;
+      background: rgba(200,169,126,0.06);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.45;
+      text-align: left;
+    }
+    .network-hint .material-icons { color: var(--gold); flex-shrink: 0; font-size: 22px; }
+    .hint-body p { margin: 0 0 8px; }
+    .hint-pre {
+      margin: 0 0 8px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,0.35);
+      border-radius: 6px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.72rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #e8dcb8;
+    }
+    .hint-foot { font-size: 0.72rem; opacity: .9; margin: 0 !important; }
   `]
 })
 export class AdminLoginComponent {
   private admin = inject(AdminService);
   private router = inject(Router);
+
+  /** Bloque literal para pegar en Railway (evita que __ se «coma» la fuente en pantalla). */
+  readonly railwayVarsCopy =
+    ['OPCIÓN A (nombre estándar .NET)',
+     'Nombre:    Cors__AllowedOrigins',
+     'Valor:     https://nllanes.github.io',
+     '',
+     'OPCIÓN B (más simple)',
+     'Nombre:    FrontendOrigin',
+     'Valor:     https://nllanes.github.io',
+    ].join('\n');
 
   password = '';
   loading = signal(false);
